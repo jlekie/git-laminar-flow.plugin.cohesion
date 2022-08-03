@@ -19,7 +19,6 @@ const createPlugin: PluginHandler = (options) => {
         init: async ({ config, stdout, dryRun }) => {
         },
         updateVersion: async (oldVersion, newVersion, { config, stdout, dryRun }) => {
-
         },
         registerCommands: () => [
             class SnapshotCommand extends BaseCommand {
