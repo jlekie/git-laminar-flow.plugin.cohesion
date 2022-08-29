@@ -6,7 +6,7 @@ import { Command, Option } from 'clipanion';
 
 import { PluginHandler } from '@jlekie/git-laminar-flow-cli';
 import { BaseCommand } from '@jlekie/git-laminar-flow-cli';
-import { loadConfig } from '@jlekie/cohesion-cli';
+import { loadConfig, parseArgs } from '@jlekie/cohesion-cli';
 
 const OptionsSchema = Zod.object({
     configPath: Zod.string(),
@@ -36,7 +36,10 @@ const createPlugin: PluginHandler = (options) => {
 
                     const cohesionConfig = await loadConfig(parsedOptions.configPath);
 
-                    cohesionConfig.exec(this.args);
+                    for (const arg of this.args) {
+                        const parsedArgs = parseArgs(arg);
+                        cohesionConfig.exec(parsedArgs);
+                    }
                 }
             }
         ]
