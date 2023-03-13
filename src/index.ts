@@ -7,7 +7,7 @@ import { Command, Option } from 'clipanion';
 
 import { PluginHandler } from '@jlekie/git-laminar-flow-cli';
 import { BaseCommand } from '@jlekie/git-laminar-flow-cli';
-import { loadConfig, parseArgs } from '@jlekie/cohesion-cli';
+import { Config, loadApp, parseArgs } from '@jlekie/cohesion-cli';
 
 const OptionsSchema = Zod.object({
     configPath: Zod.string().optional().default('./cohesion.yml'),
@@ -22,10 +22,11 @@ const createPlugin: PluginHandler = (options) => {
 
     return {
         init: async ({ config, stdout, dryRun }) => {
-            const cohesionConfig = await loadConfig(parsedOptions.configPath);
+            const cohesionConfig = await Config.loadConfig(parsedOptions.configPath);
+            const cohesionApp = await loadApp(cohesionConfig);
 
             for (const cmd of parsedOptions.onInit)
-                await cohesionConfig.exec(parseArgs(cmd));
+                await cohesionApp.exec(parseArgs(cmd));
         },
         updateVersion: async (oldVersion, newVersion, { config, stdout, dryRun }) => {
         },
@@ -43,11 +44,12 @@ const createPlugin: PluginHandler = (options) => {
                     const config = await this.loadConfig();
                     const configs = config.flattenConfigs();
 
-                    const cohesionConfig = await loadConfig(parsedOptions.configPath);
+                    const cohesionConfig = await Config.loadConfig(parsedOptions.configPath);
+                    const cohesionApp = await loadApp(cohesionConfig);
 
                     for (const arg of this.args) {
                         const parsedArgs = parseArgs(arg);
-                        await cohesionConfig.exec(parsedArgs);
+                        await cohesionApp.exec(parsedArgs);
                     }
                 }
             }
